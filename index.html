@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Competition Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-card: #0d1f3c;
+      --navy-inner: #162544;
+      --accent: #4fa3e0;
+      --accent2: #1e6bbf;
+      --glow: #2196f3;
+      --text-dim: #8baed4;
+      --border: rgba(79,163,224,0.18);
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated starfield background */
+    .bg-starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 40%, rgba(30, 107, 191, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, rgba(79, 163, 224, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(16, 60, 120, 0.4) 0%, transparent 55%),
+        linear-gradient(160deg, #071020 0%, #0d1f3c 50%, #071828 100%);
+      overflow: hidden;
+    }
+
+    .bg-starfield::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 33% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 65% 90%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 78% 5%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 15% 95%, rgba(255,255,255,0.4) 0%, transparent 100%);
+    }
+
+    /* Moving light lines */
+    .bg-starfield::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent 30%, rgba(79,163,224,0.07) 50%, transparent 70%),
+        linear-gradient(45deg, transparent 40%, rgba(33,150,243,0.05) 60%, transparent 80%);
+      animation: shimmer 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes shimmer {
+      0% { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Network/grid lines */
+    .network-lines {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .network-lines svg {
+      width: 100%; height: 100%;
+      opacity: 0.13;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Title */
+    .page-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 30px rgba(79,163,224,0.7), 0 0 60px rgba(33,150,243,0.3);
+    }
+
+    .subtitle {
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+    }
+
+    /* Day Card */
+    .day-card {
+      background: linear-gradient(135deg, rgba(13,31,60,0.97) 0%, rgba(10,22,40,0.98) 100%);
+      border: 1px solid var(--border);
+      border-radius: 1.1rem;
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(79,163,224,0.08),
+        inset 0 1px 0 rgba(79,163,224,0.12);
+      backdrop-filter: blur(8px);
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .day-card:nth-child(2) { animation-delay: 0.15s; }
+    .day-card:nth-child(3) { animation-delay: 0.3s; }
+    .day-card:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .day-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #e0eeff;
+    }
+
+    .day-sublabel {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: lowercase;
+    }
+
+    /* iframe wrapper */
+    .iframe-box {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(79,163,224,0.15);
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+    }
+
+    .iframe-box iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: none;
+      background: #ffffff;
+      color-scheme: light;
+    }
+
+    /* Source code button */
+    .btn-source {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      background: rgba(10,22,40,0.85);
+      border: 1px solid rgba(79,163,224,0.2);
+      border-radius: 0.4rem;
+      padding: 4px 9px;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .btn-source:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(15,35,65,0.95);
+      box-shadow: 0 0 10px rgba(79,163,224,0.2);
+    }
+
+    /* Docs label */
+    .docs-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+    }
+
+    /* Doc cards */
+    .doc-card {
+      background: linear-gradient(135deg, #1a2a40 0%, #192438 100%);
+      border: 1px solid rgba(79,163,224,0.13);
+      border-radius: 0.65rem;
+      min-height: 90px;
+      transition: all 0.22s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-card:hover {
+      border-color: rgba(79,163,224,0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(33,150,243,0.15);
+    }
+
+    /* Divider */
+    .glow-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(79,163,224,0.4), transparent);
+      margin: 0 auto;
+    }
+
+    /* Doc card inner content */
+    .doc-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 8px;
+    }
+    .doc-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      background: rgba(79,163,224,0.12);
+      border: 1px solid rgba(79,163,224,0.2);
+      flex-shrink: 0;
+    }
+    .doc-name {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #a8c8e8;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 12, 25, 0.82);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Modal window */
+    .modal-window {
+      background: linear-gradient(145deg, #0d1f3c 0%, #091628 100%);
+      border: 1px solid rgba(79,163,224,0.3);
+      border-radius: 1rem;
+      box-shadow:
+        0 0 0 1px rgba(79,163,224,0.08),
+        0 20px 60px rgba(0,0,0,0.7),
+        0 0 40px rgba(33,150,243,0.1);
+      width: 100%;
+      max-width: 480px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.88) translateY(20px);
+      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+      overflow: hidden;
+    }
+    .modal-overlay.active .modal-window {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Modal title bar */
+    .modal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(79,163,224,0.15);
+      background: rgba(10,22,40,0.6);
+      flex-shrink: 0;
+    }
+    .modal-titlebar-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: rgba(79,163,224,0.15);
+      border: 1px solid rgba(79,163,224,0.25);
+    }
+    .modal-titlebar-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #d0e8ff;
+      flex: 1;
+    }
+    .modal-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255,80,80,0.15);
+      border: 1px solid rgba(255,100,100,0.25);
+      color: #ff8888;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      background: rgba(255,80,80,0.35);
+      border-color: rgba(255,100,100,0.5);
+      color: #fff;
+    }
+
+    /* Modal body */
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-body::-webkit-scrollbar { width: 5px; }
+    .modal-body::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+    .modal-body::-webkit-scrollbar-thumb { background: rgba(79,163,224,0.25); border-radius: 3px; }
+
+    .modal-body h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+      margin-top: 18px;
+    }
+    .modal-body h3:first-child { margin-top: 0; }
+    .modal-body p {
+      font-size: 0.82rem;
+      color: #8baed4;
+      line-height: 1.75;
+    }
+    .modal-body code {
+      display: block;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(79,163,224,0.15);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: #7dd3fc;
+      margin-top: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .modal-tag {
+      display: inline-block;
+      background: rgba(79,163,224,0.12);
+      border: 1px solid rgba(79,163,224,0.22);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      margin: 3px 3px 3px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-starfield"></div>
+
+  <!-- Network lines SVG -->
+  <div class="network-lines">
+    <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <line x1="50" y1="200" x2="300" y2="100" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="300" y1="100" x2="600" y2="250" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="600" y1="250" x2="900" y2="150" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="150" y1="400" x2="400" y2="350" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="400" y1="350" x2="700" y2="500" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="700" y1="500" x2="950" y2="420" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="80" y1="600" x2="350" y2="650" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="350" y1="650" x2="650" y2="580" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="650" y1="580" x2="920" y2="700" stroke="#4fa3e0" stroke-width="1"/>
+      <line x1="300" y1="100" x2="150" y2="400" stroke="#4fa3e0" stroke-width="0.5"/>
+      <line x1="600" y1="250" x2="400" y2="350" stroke="#4fa3e0" stroke-width="0.5"/>
+      <line x1="900" y1="150" x2="700" y2="500" stroke="#4fa3e0" stroke-width="0.5"/>
+      <line x1="400" y1="350" x2="350" y2="650" stroke="#4fa3e0" stroke-width="0.5"/>
+      <circle cx="300" cy="100" r="3" fill="#4fa3e0" opacity="0.8"/>
+      <circle cx="600" cy="250" r="3" fill="#4fa3e0" opacity="0.8"/>
+      <circle cx="400" cy="350" r="3" fill="#4fa3e0" opacity="0.8"/>
+      <circle cx="700" cy="500" r="3" fill="#4fa3e0" opacity="0.8"/>
+      <circle cx="350" cy="650" r="3" fill="#4fa3e0" opacity="0.8"/>
+      <circle cx="900" cy="150" r="2" fill="#4fa3e0" opacity="0.6"/>
+      <circle cx="150" cy="400" r="2" fill="#4fa3e0" opacity="0.6"/>
+      <circle cx="650" cy="580" r="2" fill="#4fa3e0" opacity="0.6"/>
+    </svg>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content px-4 py-10 max-w-2xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-10" style="animation: fadeUp 0.5s ease both;">
+      <h1 class="page-title text-white text-3xl md:text-4xl mb-2">Web Competition Learning</h1>
+      <p class="subtitle text-sm">- By kateaw09 -</p>
+    </div>
+
+    <!-- Days Container -->
+    <div class="flex flex-col gap-5">
+
+      <!-- Day 1 -->
+      <div class="day-card p-5">
+        <!-- Day Label -->
+        <div class="text-center mb-3">
+          <div class="day-label">- day 1 -</div>
+          <div class="day-sublabel mt-0.5">introduction</div>
+        </div>
+
+        <!-- iFrame Area -->
+        <div class="iframe-box mb-4" style="height: 210px;">
+          <iframe src="day-1/index.html" title="Day 1 Result"></iframe>
+          <a href="https://github.com" class="btn-source">view<br>source code</a>
+        </div>
+
+        <!-- Docs -->
+        <div class="docs-label mb-2">- Docs -</div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="doc-card" onclick="openModal('📄','HTML Basics','html-basics')">
+            <div class="doc-icon">📄</div>
+            <div class="doc-name">HTML Basics</div>
+          </div>
+          <div class="doc-card" onclick="openModal('🎨','CSS Intro','css-intro')">
+            <div class="doc-icon">🎨</div>
+            <div class="doc-name">CSS Intro</div>
+          </div>
+          <div class="doc-card" onclick="openModal('🌐','Web Overview','web-overview')">
+            <div class="doc-icon">🌐</div>
+            <div class="doc-name">Web Overview</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Glow divider -->
+      <div class="glow-line w-4/5"></div>
+
+      <!-- Day 2 -->
+      <div class="day-card p-5">
+        <div class="text-center mb-3">
+          <div class="day-label">- day 2 -</div>
+          <div class="day-sublabel mt-0.5">learning</div>
+        </div>
+
+        <div class="iframe-box mb-4" style="height: 210px;">
+          <iframe src="html/result" title="Day 2 Result"></iframe>
+          <button class="btn-source">view<br>source code</button>
+        </div>
+
+        <div class="docs-label mb-2">- Docs -</div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="doc-card" onclick="openModal('⚡','JavaScript','javascript')">
+            <div class="doc-icon">⚡</div>
+            <div class="doc-name">JavaScript</div>
+          </div>
+          <div class="doc-card" onclick="openModal('📦','DOM API','dom-api')">
+            <div class="doc-icon">📦</div>
+            <div class="doc-name">DOM API</div>
+          </div>
+          <div class="doc-card" onclick="openModal('🔗','Fetch API','fetch-api')">
+            <div class="doc-icon">🔗</div>
+            <div class="doc-name">Fetch API</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 3 -->
+      <div class="day-card p-5">
+        <div class="text-center mb-3">
+          <div class="day-label">- day 3 -</div>
+          <div class="day-sublabel mt-0.5">practice</div>
+        </div>
+
+        <div class="iframe-box mb-4" style="height: 210px;">
+          <iframe src="html/result" title="Day 3 Result"></iframe>
+          <button class="btn-source">view<br>source code</button>
+        </div>
+
+        <div class="docs-label mb-2">- Docs -</div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="doc-card" onclick="openModal('🏆','Competition Tips','comp-tips')">
+            <div class="doc-icon">🏆</div>
+            <div class="doc-name">Competition Tips</div>
+          </div>
+          <div class="doc-card" onclick="openModal('📐','Layout Design','layout')">
+            <div class="doc-icon">📐</div>
+            <div class="doc-name">Layout Design</div>
+          </div>
+          <div class="doc-card" onclick="openModal('🚀','Deploy Guide','deploy')">
+            <div class="doc-icon">🚀</div>
+            <div class="doc-name">Deploy Guide</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+    <div class="modal-window">
+      <div class="modal-titlebar">
+        <div class="modal-titlebar-icon" id="modal-icon">📄</div>
+        <div class="modal-titlebar-name" id="modal-title">Doc Title</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    const docs = {
+      'html-basics': {
+        sections: [
+          { heading: 'What is HTML?', text: 'HTML (HyperText Markup Language) คือภาษามาตรฐานสำหรับสร้างหน้าเว็บ ใช้ tag เพื่อกำหนดโครงสร้างและความหมายของเนื้อหา' },
+          { heading: 'โครงสร้างพื้นฐาน', code: '<!DOCTYPE html>\n<html>\n  <head>\n    <title>My Page</title>\n  </head>\n  <body>\n    <h1>Hello World</h1>\n  </body>\n</html>' },
+          { heading: 'Tags ที่ใช้บ่อย', tags: ['<div>', '<p>', '<h1-h6>', '<a>', '<img>', '<ul><li>', '<form>', '<input>'] },
+        ]
+      },
+      'css-intro': {
+        sections: [
+          { heading: 'What is CSS?', text: 'CSS (Cascading Style Sheets) ใช้ตกแต่งและจัดวางองค์ประกอบใน HTML ควบคุม สี, ฟอนต์, ขนาด, และ layout ของหน้าเว็บ' },
+          { heading: 'ตัวอย่าง Syntax', code: 'selector {\n  property: value;\n}\n\nh1 {\n  color: #4fa3e0;\n  font-size: 2rem;\n  margin-bottom: 16px;\n}' },
+          { heading: 'Box Model', text: 'ทุก element มี content → padding → border → margin ห่อหุ้มอยู่ การเข้าใจ box model ช่วยให้จัดวาง layout ได้ถูกต้อง' },
+        ]
+      },
+      'web-overview': {
+        sections: [
+          { heading: 'How the Web Works', text: 'เมื่อกด URL เบราว์เซอร์จะส่ง HTTP Request ไปยัง Server, Server ตอบกลับด้วย HTML/CSS/JS แล้วเบราว์เซอร์แสดงผล' },
+          { heading: 'Client vs Server', text: 'Client (Frontend) คือโค้ดที่ทำงานในเบราว์เซอร์ ได้แก่ HTML, CSS, JS ส่วน Server (Backend) จัดการข้อมูลและ logic' },
+          { heading: 'เทคโนโลยีพื้นฐาน', tags: ['HTML', 'CSS', 'JavaScript', 'HTTP', 'DNS', 'Browser', 'Server'] },
+        ]
+      },
+      'javascript': {
+        sections: [
+          { heading: 'What is JavaScript?', text: 'JavaScript คือภาษา scripting ที่ทำให้หน้าเว็บมีความสามารถ interactive ทำงานใน browser และ server (Node.js)' },
+          { heading: 'ตัวอย่าง', code: '// Variables\nconst name = "kateaw09";\nlet score = 100;\n\n// Function\nfunction greet(user) {\n  return `Hello, ${user}!`;\n}\n\nconsole.log(greet(name));' },
+          { heading: 'Concepts สำคัญ', tags: ['Variables', 'Functions', 'Arrays', 'Objects', 'Events', 'Async/Await', 'ES6+'] },
+        ]
+      },
+      'dom-api': {
+        sections: [
+          { heading: 'DOM คืออะไร?', text: 'Document Object Model (DOM) คือ interface ที่ JavaScript ใช้เข้าถึงและเปลี่ยนแปลง HTML ทำให้หน้าเว็บ dynamic' },
+          { heading: 'การใช้งาน', code: '// Select element\nconst el = document.querySelector(".btn");\n\n// Change content\nel.textContent = "Clicked!";\n\n// Add event listener\nel.addEventListener("click", () => {\n  el.classList.toggle("active");\n});' },
+          { heading: 'Methods ที่ใช้บ่อย', tags: ['querySelector', 'getElementById', 'addEventListener', 'classList', 'innerHTML', 'appendChild'] },
+        ]
+      },
+      'fetch-api': {
+        sections: [
+          { heading: 'Fetch API คืออะไร?', text: 'Fetch API ใช้ดึงข้อมูลจาก server หรือ API แบบ asynchronous แทนที่ XMLHttpRequest รุ่นเก่า ใช้ร่วมกับ Promise หรือ async/await' },
+          { heading: 'ตัวอย่าง', code: 'async function getData() {\n  const res = await fetch("https://api.example.com/data");\n  const json = await res.json();\n  console.log(json);\n}\n\ngetData();' },
+          { heading: 'HTTP Methods', tags: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] },
+        ]
+      },
+      'comp-tips': {
+        sections: [
+          { heading: 'เคล็ดลับการแข่งขัน', text: 'อ่านโจทย์ให้ครบก่อนเริ่มทำ วางแผนโครงสร้าง HTML ก่อน แล้วค่อยทำ CSS และ JS จัดการเวลาให้ดี ส่งงานก่อนหมดเวลาเสมอ' },
+          { heading: 'สิ่งที่ต้องระวัง', text: 'ตรวจสอบ cross-browser compatibility, responsive design บนมือถือ, ความเร็วในการโหลด และ accessibility ของเว็บ' },
+          { heading: 'Checklist', tags: ['Responsive', 'Valid HTML', 'Clean CSS', 'No Console Errors', 'Fast Load', 'Readable Code'] },
+        ]
+      },
+      'layout': {
+        sections: [
+          { heading: 'CSS Layout Systems', text: 'มี 2 ระบบหลักคือ Flexbox (1D) และ Grid (2D) ใช้ร่วมกันได้ตามความเหมาะสมของ component' },
+          { heading: 'Flexbox', code: '.container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 16px;\n  flex-wrap: wrap;\n}' },
+          { heading: 'CSS Grid', code: '.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 20px;\n}' },
+        ]
+      },
+      'deploy': {
+        sections: [
+          { heading: 'Deploy คืออะไร?', text: 'การ Deploy คือการนำโค้ดขึ้น server จริง เพื่อให้ผู้ใช้งานสามารถเข้าถึงเว็บไซต์ได้ผ่านอินเทอร์เน็ต' },
+          { heading: 'Platform ที่นิยม', tags: ['Vercel', 'Netlify', 'GitHub Pages', 'Firebase Hosting', 'Cloudflare Pages'] },
+          { heading: 'ขั้นตอนง่าย ๆ', text: '1. Push โค้ดขึ้น GitHub\n2. เชื่อมต่อ repository กับ Vercel หรือ Netlify\n3. ระบบ deploy อัตโนมัติทุกครั้งที่ push' },
+        ]
+      },
+    };
+
+    function openModal(icon, title, key) {
+      document.getElementById('modal-icon').textContent = icon;
+      document.getElementById('modal-title').textContent = title;
+
+      const data = docs[key];
+      let html = '';
+      if (data) {
+        data.sections.forEach(s => {
+          html += `<h3>${s.heading}</h3>`;
+          if (s.text) html += `<p>${s.text.replace(/\n/g,'<br>')}</p>`;
+          if (s.code) html += `<code>${s.code}</code>`;
+          if (s.tags) html += s.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+        });
+      }
+      document.getElementById('modal-body').innerHTML = html;
+
+      const overlay = document.getElementById('modal');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOutside(e) {
+      if (e.target === document.getElementById('modal')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+
+</body>
+</html>
