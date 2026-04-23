@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # ตั้งค่า Service สำหรับฐานข้อมูล MongoDB
+  mongodb:
+    image: mongo:latest # ดึง Image ล่าสุดของ MongoDB มาจาก Docker Hub
+    container_name: mern_mongodb # ตั้งชื่อ Container ให้จำง่าย
+    ports:
+      - '27017:27017' # ทำการ Map Port 27017 ของเครื่องหลักไปที่ 27017 ของ Container
+    environment:
+      # ตั้งค่า Username และ Password ให้กับฐานข้อมูลของเรา
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      # สร้างพื้นที่เก็บข้อมูลถาวร เพื่อไม่ให้ข้อมูลหายเมื่อ Container ดับ
+      - mongo-data:/data/db
+
+  # ตั้งค่า Service สำหรับ Mongo Express ซึ่งเป็นหน้าตา UI จัดการ Database ผ่านเว็บ
+  mongo-express:
+    image: mongo-express # ดึง Image ของ Mongo Express
+    container_name: mern_mongo_express
+    restart: always # สั่งให้ Restart อัตโนมัติเมื่อพัง
+    ports:
+      - '8081:8081' # สามารถเข้าผ่านเว็บได้ที่ http://localhost:8081
+    environment:
+      # การตั้งค่าเชื่อมต่อไปยัง MongoDB ที่เราสร้างไว้ข้างบน
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin # Username เดียวกับข้างบน
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password # Password เดียวกับข้างบน
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/ # URL สำหรับให้ Express ต่อหา Database
+      # การตั้งค่ารหัสผ่านสำหรับการเข้าถึงหน้าเว็บ Mongo Express เอง
+      ME_CONFIG_BASICAUTH_USERNAME: admin # Username เข้าเว็บ
+      ME_CONFIG_BASICAUTH_PASSWORD: password # Password เข้าเว็บ
+    depends_on:
+      # รอให้ mongodb รันเสร็จก่อน ถึงจะรันตัวนี้
+      - mongodb
+
+# กำหนด Volume เพื่อให้ข้อมูล Database ของเรายังอยู่เมื่อปิด Docker
+volumes:
+  mongo-data:
